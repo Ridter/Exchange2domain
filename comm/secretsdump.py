@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 import argparse
 import codecs
 import logging
@@ -8,7 +10,7 @@ from impacket import version
 from impacket.examples import logger
 from impacket.smbconnection import SMBConnection
 
-from impacket.examples.secretsdump import LocalOperations, RemoteOperations, SAMHashes, LSASecrets, NTDSHashes, ResumeSessionMgrInFile
+from dump import LocalOperations, RemoteOperations, SAMHashes, LSASecrets, NTDSHashes, ResumeSessionMgrInFile
 
 class DumpSecrets:
     def __init__(self, remoteName, username='', password='', domain='',execmethod='',dcuser=''):
@@ -58,7 +60,6 @@ class DumpSecrets:
     def dump(self):
         try:
             if self.__remoteName.upper() == 'LOCAL' and self.__username == '':
-                print("in")
                 self.__isRemote = False
                 self.__useVSSMethod = True
                 if self.__systemHive:

