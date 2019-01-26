@@ -11,7 +11,7 @@ from impacket.smbconnection import SMBConnection
 from impacket.examples.secretsdump import LocalOperations, RemoteOperations, SAMHashes, LSASecrets, NTDSHashes, ResumeSessionMgrInFile
 
 class DumpSecrets:
-    def __init__(self, remoteName, username='', password='', domain='',execmethod=''):
+    def __init__(self, remoteName, username='', password='', domain='',execmethod='',dcuser=''):
         self.__useVSSMethod = False
         self.__remoteName = remoteName
         self.__remoteHost = remoteName
@@ -38,7 +38,7 @@ class DumpSecrets:
         self.__doKerberos = False
         self.__justDC = True
         self.__justDCNTLM = False
-        self.__justUser = None
+        self.__justUser = dcuser
         self.__pwdLastSet = False
         self.__printUserStatus= False
         self.__resumeFileName = None

