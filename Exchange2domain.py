@@ -73,7 +73,7 @@ def startServers(passargs):
     privuser = passargs.user
     PoppedDB		= Manager().dict()	# A dict of PoppedUsers
     PoppedDB_Lock	= Lock()			# A lock for opening the dict
-    relayServers 	=  ( SMBRelayServer, HTTPRelayServer )
+    relayServers = [HTTPRelayServer]
     serverThreads 	= []
     for server in relayServers:
         c = NTLMRelayxConfig()
