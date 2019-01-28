@@ -317,7 +317,7 @@ class HTTPRelayServer(Thread):
     def run(self):
         LOG.info("Setting up HTTP Server")
         # changed to read from the interfaceIP set in the configuration
-        self.server = self.HTTPServer((self.config.interfaceIp, 80), self.HTTPHandler, self.config)
+        self.server = self.HTTPServer((self.config.interfaceIp, self.config.interfacePort), self.HTTPHandler, self.config)
 
         try:
              self.server.serve_forever()

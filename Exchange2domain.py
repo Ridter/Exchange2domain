@@ -73,7 +73,7 @@ def startServers(passargs):
     privuser = passargs.user
     PoppedDB		= Manager().dict()	# A dict of PoppedUsers
     PoppedDB_Lock	= Lock()			# A lock for opening the dict
-    relayServers = [HTTPRelayServer]
+    relayServers 	=  [HTTPRelayServer]
     serverThreads 	= []
     for server in relayServers:
         c = NTLMRelayxConfig()
@@ -85,6 +85,7 @@ def startServers(passargs):
         c.setAttacks(PROTOCOL_ATTACKS)
         c.setLootdir('.')
         c.setInterfaceIp("0.0.0.0")
+        c.setInterfacePort(int(passargs.attacker_port))
         c.setLDAPOptions(True, True, True, privuser)
         c.PoppedDB 		= PoppedDB 		# pass the poppedDB to the relay servers
         c.PoppedDB_Lock = PoppedDB_Lock # pass the poppedDB to the relay servers
