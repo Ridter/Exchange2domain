@@ -1,3 +1,4 @@
+from __future__ import print_function
 # SECUREAUTH LABS. Copyright 2018 SecureAuth Corporation. All rights reserved.
 #
 # This software is provided under under a slightly modified version
@@ -34,9 +35,9 @@ class HTTPAttack(ProtocolAttack):
         #for example with:
         result = self.client.request("GET", "/")
         r1 = self.client.getresponse()
-        print r1.status, r1.reason
+        print(r1.status, r1.reason)
         data1 = r1.read()
-        print data1
+        print(data1)
 
         #Remove protocol from target name
         #safeTargetName = self.client.target.replace('http://','').replace('https://','')

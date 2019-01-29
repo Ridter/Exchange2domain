@@ -102,7 +102,7 @@ def startServers(passargs):
             try:
                 while exp.isAlive():
                     pass
-            except KeyboardInterrupt, e:
+            except KeyboardInterrupt as e:
                 logging.info("Shutting down...")
                 for thread in serverThreads:
                     thread.server.shutdown()
@@ -143,7 +143,7 @@ def gethash(passargs):
     try:
         time.sleep(10)
         check = dumper.dump()
-    except Exception, e:
+    except Exception as e:
         if logging.getLogger().level == logging.DEBUG:
             import traceback
             traceback.print_exc()

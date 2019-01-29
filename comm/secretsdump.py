@@ -78,7 +78,7 @@ class DumpSecrets:
                 try:
                     try:
                         self.connect()
-                    except Exception, e:
+                    except Exception as e:
                         if os.getenv('KRB5CCNAME') is not None and self.__doKerberos is True:
                             # SMBConnection failed. That might be because there was no way to log into the
                             # target system. We just have a last resort. Hope we have tickets cached and that they
@@ -95,7 +95,7 @@ class DumpSecrets:
                         bootKey             = self.__remoteOps.getBootKey()
                         # Let's check whether target system stores LM Hashes
                         self.__noLMHash = self.__remoteOps.checkNoLMHashPolicy()
-                except Exception, e:
+                except Exception as e:
                     self.__canProcessSAMLSA = False
                     if str(e).find('STATUS_USER_SESSION_DELETED') and os.getenv('KRB5CCNAME') is not None \
                         and self.__doKerberos is True:
@@ -125,7 +125,7 @@ class DumpSecrets:
                 if self.__NTDSHashes:
                     self.cleanup()
                     return True
-            except Exception, e:
+            except Exception as e:
                 if logging.getLogger().level == logging.DEBUG:
                     import traceback
                     traceback.print_exc()
@@ -137,7 +137,7 @@ class DumpSecrets:
                         os.unlink(resumeFile)
                 self.cleanup()
                 return False
-        except (Exception, KeyboardInterrupt), e:
+        except (Exception, KeyboardInterrupt) as e:
             try:
                 self.cleanup()
             except:

