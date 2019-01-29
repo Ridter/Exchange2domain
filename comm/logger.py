@@ -16,7 +16,7 @@ class ImpacketFormatter(logging.Formatter):
         elif record.levelno == logging.DEBUG:
             record.bullet = "[*]"
         else:
-            record.bullet = '[-]'
+            record.bullet = '\033[1;31;m[-]'
         return logging.Formatter.format(self, record)
 
 
