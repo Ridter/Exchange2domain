@@ -288,8 +288,6 @@ class HTTPRelayServer(Thread):
 
             return False
 
-        def checkstatus():
-            return self.success
         def do_attack(self):
             # Check if SOCKS is enabled and if we support the target scheme
             if self.server.config.runSocks and self.target.scheme.upper() in self.server.config.socksServer.supportedSchemes:
