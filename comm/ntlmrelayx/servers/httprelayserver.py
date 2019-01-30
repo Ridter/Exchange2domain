@@ -285,7 +285,9 @@ class HTTPRelayServer(Thread):
             if errorCode == STATUS_SUCCESS:
                 config.set_suc(True)
                 return True
-
+            else:
+                config.set_fail(True)
+                return False
             return False
 
         def do_attack(self):

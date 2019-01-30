@@ -124,10 +124,15 @@ def checkauth(passargs):
             break
         else:
             suc = config.get_suc()
-            tmp = time.time() - start
-            if tmp > 120:
-                logging.error("Time Out. exiting...")
+            fal = config.get_fail()
+            if fal == True:
+                logging.error("Get auth failed, exiting...")
                 break
+            else:
+                tmp = time.time() - start
+                if tmp > 120:
+                    logging.error("Time Out. exiting...")
+                    break
                 
 def gethash(passargs):
     remoteName = passargs.target_host
