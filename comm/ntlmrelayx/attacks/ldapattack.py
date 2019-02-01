@@ -20,6 +20,7 @@ import string
 import thread
 import ldapdomaindump
 import ldap3
+import config
 from impacket import LOG
 from impacket.examples.ntlmrelayx.attacks import ProtocolAttack
 from impacket.ldap import ldaptypes
@@ -145,6 +146,7 @@ class LDAPAttack(ProtocolAttack):
             LOG.critical(
                 'Success! User %s now has Replication-Get-Changes-All privileges on the domain' % username)
             LOG.info('Try using DCSync with secretsdump.py and this user :)')
+            config.set_priv(True)
             return True
         else:
             LOG.error('Error when updating ACL: %s' % self.client.result)
