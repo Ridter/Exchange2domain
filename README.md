@@ -1,5 +1,7 @@
 # Exchange2domain
 
+[![Python 2.7](https://img.shields.io/badge/python-2.7-yellow.svg)](https://www.python.org/) 
+
 All in One tools of [privexchange](https://github.com/dirkjanm/privexchange/) . You only need to open the web server port, so **no high privileges are required**.
 
 Great writeup! [Abusing Exchange: One API call away from Domain Admin](https://dirkjanm.io/abusing-exchange-one-api-call-away-from-domain-admin/).

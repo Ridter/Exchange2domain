@@ -1,2 +1,2 @@
-impacket>=0.9.18
+impacket==0.9.18
 logging
